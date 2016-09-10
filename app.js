@@ -4,6 +4,8 @@ const express = require('express');
 const cors = require('cors');
 const bodyparser = require('body-parser');
 
+const Mongodb = require('./models/Mongodb');
+
 const app = express();
 
 app.set('port', 8088);
@@ -21,6 +23,10 @@ app.use((err, req, res, next) => {
   return res.status(500).send(err);
 });
 
-app.listen(app.get('port'), () => {
-  console.log('Express server listening on port', app.get('port'));
-});
+let startServer = () => {
+	app.listen(app.get('port'), () => {
+    console.log('Express server listening on port', app.get('port'));
+  });
+};
+
+Mongodb.connect(startServer);

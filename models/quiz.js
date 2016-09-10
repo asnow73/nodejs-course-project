@@ -1,67 +1,40 @@
 'use strict';
 
-const RequestError = require('./RequestError');
+//const RequestError = require('./RequestError');
+var Mongodb = require('./Mongodb');
 
-let quizes = [
-{
-  id: 1,
-  name: 'quiz1',
-  options: ['option1', 'option2']
-},
-{
-  id: 2,
-  name: 'quiz2',
-  options: ['option1', 'option2']
-},
-{
-  id: 3,
-  name: 'quiz3',
-  options: ['option1', 'option2']
-}]
 
-let currentId = 4;
-
-function make(data) {
-  let newQuiz = {
-    id: currentId++,
-    name: data.name,
-    options: data.options || []
-  }
-  quizes.push(newQuiz);
-  return newQuiz;
+function make(data, cb) {
+  Mongodb.insert('quizes', data, cb);
 }
 
-function findIndex(id) {
-  let index = quizes.findIndex(function(element) {
-    return element.id == id;
-  });
-  if (index >= 0) {
-    return index;
-  } else {
-    throw new RequestError('Quiz is not exist', 404);
-  }
+function find(id, cb) {
+  Mongodb.find('quizes', id, (err, doc) => {
+		if (err) { return cb(err); }
+		cb(err, doc);
+	});
 }
 
-function find(id) {
-  let index = findIndex(id);
-  return quizes[index];
+function update(id, data, cb) {
+	Mongodb.update('quizes', id, data, cb);
 }
 
-function update(id, data) {
-  let quiz = find(id);
-  Object.keys(data).forEach(function(key){
-    quiz[key] = data[key];
-  });
-  return quiz;
+function remove(id, cb) {
+	find(id, function(err, data) {
+		if (err) {
+			cb(err);
+		} else {
+			data._deleted = true;
+			update(id, data, cb);
+		}
+	});
 }
 
-function remove(id) {
-  let index = findIndex(id);
-  return quizes.splice(index, 1);
-}
-
-function all() {
-  return quizes;
+function all(cb) {
+	Mongodb.findAll('quizes', (err, docs) => {
+		if (err) { return cb(err); }
+		cb(err, docs);
+	});
 }
 
 

@@ -8,42 +8,26 @@ const app = express();
 app.get('/(:id)?', (req, res, next) => {
   let id = req.params.id;
   if (id) {
-  	try {
-  		res.send(quizes.find(id));
-  	} catch(err) {
-			return res.status(err.statusCode).send(err.message);
-		}
+	  quizes.find(id, (err, quiz) => err ? next(err) : res.send(quiz));
   } else {
-  	res.send(quizes.all());
+	  quizes.all((err, quizes) => err ? next(err) : res.send(quizes));
   }
 });
 
 app.post('/', (req, res, next) => {
 	let data = req.body;
-	try {
-		res.send(quizes.make(data));
-	} catch(err) {
-		return res.status(err.statusCode).send(err.message);
-	}
+  quizes.make(data, (err, quiz) => err ? next(err) : res.send(quiz));
 });
 
 app.put('/:id', (req, res, next) => {
 	let data = req.body;
-	try {
-		let id = req.params.id;
-		res.send(quizes.update(id, data));
-	} catch(err) {
-		return res.status(err.statusCode).send(err.message);
-	}
+	let id = req.params.id;
+	quizes.update(id, data, (err, quiz) => err ? next(err) : res.send(quiz));
 });
 
 app.delete('/:id', (req, res, next) => {
 	let id = req.params.id;
-	try {
-		res.send(quizes.remove(id));
-	} catch(err) {
-		return res.status(err.statusCode).send(err.message);
-	}
+  quizes.remove(id, (err, quiz) => err ? next(err) : res.send(quiz))
 });
 
 module.exports = app;

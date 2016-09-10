@@ -8,42 +8,26 @@ const app = express();
 app.get('/(:user_id)?', (req, res, next) => {
   let id = req.params.user_id;
   if (id) {
-  	try {
-  		res.send(users.find(id));
-  	} catch(err) {
-			return res.status(err.statusCode).send(err.message);
-		}
+	  users.find(id, (err, user) => err ? next(err) : res.send(user));
   } else {
-  	res.send(users.all());
+	  users.all((err, users) => err ? next(err) : res.send(users));
   }
 });
 
 app.post('/', (req, res, next) => {
-	let data = req.body;
-	try {
-		res.send(users.make(data));
-	} catch(err) {
-		return res.status(err.statusCode).send(err.message);
-	}
+  let data = req.body;
+  users.make(data, (err, user) => err ? next(err) : res.send(user));
 });
 
 app.put('/:user_id', (req, res, next) => {
-	let data = req.body;
-	try {
-		let id = req.params.user_id;
-		res.send(users.update(id, data));
-	} catch(err) {
-		return res.status(err.statusCode).send(err.message);
-	}
+  let data = req.body;
+	let id = req.params.user_id;
+	users.update(id, data, (err, user) => err ? next(err) : res.send(user));
 });
 
 app.delete('/:user_id', (req, res, next) => {
 	let id = req.params.user_id;
-	try {
-		res.send(users.remove(id));
-	} catch(err) {
-		return res.status(err.statusCode).send(err.message);
-	}
+  users.remove(id, (err, user) => err ? next(err) : res.send(user))
 });
 
 module.exports = app;

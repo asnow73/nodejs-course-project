@@ -1,0 +1,5 @@
+Учебный проект в рамках курса Node.js
+Запуск (необходима установленная MongoDB):
+1) npm i
+2) runMongo.bat (настройки в mongod.conf)
+3) node app.js
