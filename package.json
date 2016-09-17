@@ -9,10 +9,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "authenticate-package": "git@github.com:asnow73/nodejs-course-project-authenticate-package.git",
     "body-parser": "^1.15.2",
     "cors": "^2.8.0",
     "deepcopy": "^0.6.3",
     "express": "^4.14.0",
-    "jsonwebtoken": "^7.1.9"
+    "jsonwebtoken": "^7.1.9",
+    "mongodb": "^2.2.10"
   }
 }

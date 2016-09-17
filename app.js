@@ -5,7 +5,7 @@ const cors = require('cors');
 const bodyparser = require('body-parser');
 const config = require('./config'); // get our config file
 const Mongodb = require('./models/Mongodb');
-const authenticate = require('./controllers/authenticate');
+const authenticate = require('authenticate-package');
 const users = require('./models/user');
 const app = express();
 
