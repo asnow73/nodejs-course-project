@@ -9,7 +9,7 @@ const authenticate = require('./controllers/authenticate');
 const app = express();
 
 app.set('port', config.port);
-app.set('superSecret', config.secret); // secret variable
+authenticate.init(config.secret);
 
 app.use(cors());
 app.use(bodyparser.json());

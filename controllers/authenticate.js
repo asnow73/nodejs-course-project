@@ -5,6 +5,15 @@ const users = require('../models/user');
 var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 const app = express();
 
+function getSuperSecret(context) {
+    if (!context.superSecret) {
+        throw new Error('superSecret property is not found, try to call init function of authentication');
+    } else {
+        return context.superSecret;
+    }
+}
+
+
 app.post('/authenticate', (req, res, next) => {
     let data = req.body;
     users.findByName(data.name, function(err, user){
@@ -21,8 +30,8 @@ app.post('/authenticate', (req, res, next) => {
 
                     // if user is found and password is right
                     // create a token
-                    var token = jwt.sign(user, app.get('superSecret'));
-                    
+                    var token = jwt.sign(user, getSuperSecret(app));
+
                     // return the information including token as JSON
                     res.send({
                         success: true,
@@ -45,7 +54,7 @@ app.use(function(req, res, next) {
     if (token) {
 
         // verifies secret and checks exp
-        jwt.verify(token, app.get('superSecret'), function(err, decoded) {
+        jwt.verify(token, getSuperSecret(app), function(err, decoded) {
             if (err) {
                 return res.json({ success: false, message: 'Failed to authenticate token.' });
             } else {
@@ -66,5 +75,9 @@ app.use(function(req, res, next) {
 
     }
 });
+
+app.init = function(superSecret) {
+    this.superSecret = superSecret;
+}
 
 module.exports = app;
