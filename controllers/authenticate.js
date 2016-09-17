@@ -1,22 +1,30 @@
 'use strict';
 
 const express = require('express');
-const users = require('../models/user');
 var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 const app = express();
 
-function getSuperSecret(context) {
-    if (!context.superSecret) {
-        throw new Error('superSecret property is not found, try to call init function of authentication');
-    } else {
-        return context.superSecret;
-    }
+function defineProperty(propertyName) {
+    Object.defineProperty(app, propertyName, {
+        get: function () {
+            if (!this['_' + propertyName]) {
+                throw new Error(propertyName +' property is not found, try to call init function of authentication');
+            } else {
+                return this['_' + propertyName];
+            }
+        },
+        set: function(newValue) {
+            this['_' + propertyName] = newValue;
+        },
+    });
 }
 
+defineProperty('supeSecret');
+defineProperty('users');
 
 app.post('/authenticate', (req, res, next) => {
     let data = req.body;
-    users.findByName(data.name, function(err, user){
+    app.users.findByName(data.name, function(err, user){
         if (err) {
             next(err);
         } else {
@@ -30,7 +38,7 @@ app.post('/authenticate', (req, res, next) => {
 
                     // if user is found and password is right
                     // create a token
-                    var token = jwt.sign(user, getSuperSecret(app));
+                    var token = jwt.sign(user, app.superSecret);
 
                     // return the information including token as JSON
                     res.send({
@@ -54,7 +62,7 @@ app.use(function(req, res, next) {
     if (token) {
 
         // verifies secret and checks exp
-        jwt.verify(token, getSuperSecret(app), function(err, decoded) {
+        jwt.verify(token, app.superSecret, function(err, decoded) {
             if (err) {
                 return res.json({ success: false, message: 'Failed to authenticate token.' });
             } else {
@@ -76,8 +84,9 @@ app.use(function(req, res, next) {
     }
 });
 
-app.init = function(superSecret) {
+app.init = function(superSecret, users) {
     this.superSecret = superSecret;
+    this.users = users;
 }
 
 module.exports = app;

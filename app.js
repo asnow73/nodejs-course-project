@@ -6,10 +6,11 @@ const bodyparser = require('body-parser');
 const config = require('./config'); // get our config file
 const Mongodb = require('./models/Mongodb');
 const authenticate = require('./controllers/authenticate');
+const users = require('./models/user');
 const app = express();
 
 app.set('port', config.port);
-authenticate.init(config.secret);
+authenticate.init(config.secret, users);
 
 app.use(cors());
 app.use(bodyparser.json());
