@@ -15,6 +15,13 @@ function find(id, cb) {
 	});
 }
 
+function findByName(name, cb) {
+	Mongodb.findByName('users', name, (err, doc) => {
+		if (err) { return cb(err); }
+		cb(err, doc);
+	});
+}
+
 function update(id, data, cb) {
 	Mongodb.update('users', id, data, cb);
 }
@@ -40,6 +47,7 @@ function all(cb) {
 module.exports = {
 	make: make,
 	find: find,
+	findByName: findByName,
 	update: update,
 	remove: remove,
 	all: all

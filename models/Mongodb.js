@@ -3,7 +3,9 @@
 const MongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectID;
 
-const url = 'mongodb://localhost:27017/myproject';
+var config = require('../config'); // get our config file
+//const url = 'mongodb://localhost:27017/myproject';
+const url = config.database;
 
 const Mongodb = {
   connect: (cb) => {
@@ -18,6 +20,11 @@ const Mongodb = {
     id = ObjectId(id);
     let con = Mongodb.DB.collection(collection);
     con.findOne({_id: id}, (err, result) => cb(err, result));
+  },
+
+  findByName: (collection, name, cb) => {
+    let con = Mongodb.DB.collection(collection);
+    con.findOne({'name': name}, (err, result) => cb(err, result));
   },
 
   findAll: (collection, cb) => {
