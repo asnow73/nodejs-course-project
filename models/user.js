@@ -3,45 +3,47 @@
 //const RequestError = require('./RequestError');
 var Mongodb = require('./Mongodb');
 
-
-function make(data, cb) {
-	Mongodb.insert('users', data, cb);
+function prepareResult(result) {
+	return result
+		.then((data) => {
+			return data;
+		})
+		.catch(err => {
+			console.log("Error in model: ", err);
+			return Promise.reject(err);
+		});
 }
 
-function find(id, cb) {
-	Mongodb.find('users', id, (err, doc) => {
-		if (err) { return cb(err); }
-		cb(err, doc);
-	});
+function make(data, cb) {
+	return prepareResult(Mongodb.insert('users', data));
+}
+
+function find(id) {
+	return prepareResult(Mongodb.find('users', id));
 }
 
 function findByName(name, cb) {
-	Mongodb.findByName('users', name, (err, doc) => {
-		if (err) { return cb(err); }
-		cb(err, doc);
-	});
+	return prepareResult(Mongodb.findByName('users', name));
 }
 
-function update(id, data, cb) {
-	Mongodb.update('users', id, data, cb);
+function update(id, data) {
+	return prepareResult(Mongodb.update('users', id, data));
 }
 
-function remove(id, cb) {
-	find(id, function(err, user) {
-		if (err) {
-			cb(err);
-		} else {
+function remove(id) {
+	return find(id)
+		.then((user) => {
 			user._deleted = true;
-			update(id, user, cb);
-		}
-	});
+			return update(id, user, cb);
+		})
+		.catch((err) => {
+			console.log("Error in model: ", err);
+			return Promise.reject(err);
+		});
 }
 
-function all(cb) {
-	Mongodb.findAll('users', (err, docs) => {
-		if (err) { return cb(err); }
-		cb(err, docs);
-	});
+function all() {
+	return prepareResult(Mongodb.findAll('users'));
 }
 
 module.exports = {
@@ -51,4 +53,4 @@ module.exports = {
 	update: update,
 	remove: remove,
 	all: all
-}
+};
