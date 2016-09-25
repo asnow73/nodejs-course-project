@@ -19,6 +19,7 @@ app.use(bodyparser.urlencoded({ extended: false }));
 app.get('/', function(req, res) {
     res.send('Hello! The API is at http://localhost:' + app.get('port') + '/');
 });
+app.use('/register', require('./controllers/register'))
 app.use(authenticate);
 app.use('/user', require('./controllers/user'));
 app.use('/event', require('./controllers/event'));

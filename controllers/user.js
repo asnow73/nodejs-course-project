@@ -15,10 +15,10 @@ app.get('/(:user_id)?', (req, res, next) => {
     }
 });
 
-app.post('/', (req, res, next) => {
-    let data = req.body;
-    users.make(data, (err, user) => err ? next(err) : res.send(user));
-});
+// app.post('/', (req, res, next) => {
+//     let data = req.body;
+//     users.make(data, (err, user) => err ? next(err) : res.send(user));
+// });
 
 app.put('/:user_id', (req, res, next) => {
     let data = req.body;

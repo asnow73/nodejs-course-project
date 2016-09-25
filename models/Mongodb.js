@@ -27,6 +27,12 @@ const Mongodb = {
     con.findOne({'name': name}, (err, result) => cb(err, result));
   },
 
+  // findAll: (collection) => {
+  //   return new Promise((resolve, reject) => {
+  //     let con = Mongodb.DB.collection(collection);
+  //     con.find({}).toArray((err, result) => err ? reject(err) : resolve(result));
+  //   });
+  // },
   findAll: (collection, cb) => {
     let con = Mongodb.DB.collection(collection);
     con.find({}).toArray((err, result) => cb(err, result));
