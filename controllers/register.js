@@ -6,7 +6,14 @@ const app = express();
 
 app.post('/', (req, res, next) => {
     let data = req.body;
-    users.make(data, (err, user) => err ? next(err) : res.send(user));
+    users.make(data)
+    .then((data) => {
+        res.send(data);
+    })
+    .catch((err) => {
+        console.log("Error in controller: ", err);
+        next(err);
+    });
 });
 
 module.exports = app;

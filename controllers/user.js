@@ -5,8 +5,8 @@ const users = require('../models/user');
 const app = express();
 
 function prepareResult(result, res, next) {
-    result.then((users) => {
-        res.send(users);
+    result.then((data) => {
+        res.send(data);
     })
     .catch((err) => {
         console.log("Error in controller: ", err);

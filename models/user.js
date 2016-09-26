@@ -14,7 +14,7 @@ function prepareResult(result) {
 		});
 }
 
-function make(data, cb) {
+function make(data) {
 	return prepareResult(Mongodb.insert('users', data));
 }
 
@@ -22,7 +22,7 @@ function find(id) {
 	return prepareResult(Mongodb.find('users', id));
 }
 
-function findByName(name, cb) {
+function findByName(name) {
 	return prepareResult(Mongodb.findByName('users', name));
 }
 
@@ -34,7 +34,7 @@ function remove(id) {
 	return find(id)
 		.then((user) => {
 			user._deleted = true;
-			return update(id, user, cb);
+			return update(id, user);
 		})
 		.catch((err) => {
 			console.log("Error in model: ", err);
