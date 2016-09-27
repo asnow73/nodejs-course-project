@@ -5,8 +5,9 @@ const fs = require('fs');
 const app = express();
 
 app.get('/', (req, res, next) => {
-    fs.readFile('./public/index.html', (err, data) => {
-        res.send(data.toString());
+    var stream = fs.ReadStream('./public/index.html');
+    stream.on('readable', () => {
+        res.send(stream.read().toString());
     })
 });
 
