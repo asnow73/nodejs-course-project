@@ -16,10 +16,11 @@ app.use(cors());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: false }));
 
-app.get('/', function(req, res) {
-    res.send('Hello! The API is at http://localhost:' + app.get('port') + '/');
-});
-app.use('/register', require('./controllers/register'))
+// app.get('/', function(req, res) {
+//     res.send('Hello! The API is at http://localhost:' + app.get('port') + '/');
+// });
+app.use('/', require('./controllers/index'));
+app.use('/register', require('./controllers/register'));
 app.use(authenticate);
 app.use('/user', require('./controllers/user'));
 app.use('/event', require('./controllers/event'));
