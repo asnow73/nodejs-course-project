@@ -1,11 +1,4 @@
 Учебный проект в рамках курса Node.js
 Запуск (необходима установленная MongoDB):
 1) npm i
-2) runMongo.bat (настройки в mongod.conf)
-3) node app.js
-
-Регистрация нового пользователя:
-curl -X POST --data 'name=Alena&password=123456' localhost:8088/register
-
-Аутентификация. Получение токена доступа:
-curl -X POST --data 'name=Alena&password=123456' localhost:8088/authenticate
+2) npm start
