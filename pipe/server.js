@@ -24,7 +24,7 @@ class myStream extends stream.Transform {
                 break;
             case 'summ':
                 if (!request.data || !isNumeric(request.data.a) || !isNumeric(request.data.b)) {
-                    throw new Error("Bad request, data in incorrect");
+                    throw new Error("Bad request, data is not correct");
                 } else {
                     result = {
                         id: request.id,
