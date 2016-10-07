@@ -2,28 +2,51 @@
 var net = require('net');
 var stream = require('stream');
 
-class myStream extends stream.Duplex {
+class myStream extends stream.Transform {
     constructor(options) {
         super(options);
         this.buffer = new Buffer(0);
-        this.marker = options.marker;
     }
 
-    _read(size) {
-        var buf = this.buffer.slice(0, size);
-        this.buffer = this.buffer.slice(size);
-
-        if (buf.length) {
-            this.push(buf);
+    _handleRequest(request) {
+        function isNumeric(n) {
+            return !isNaN(parseFloat(n)) && isFinite(n);
         }
+
+        var result = null;
+        console.log(request);
+        switch (request.type) {
+            case 'ping':
+                result = {
+                    id: request.id,
+                    message: "pong"
+                };
+                break;
+            case 'summ':
+                if (!request.data || !isNumeric(request.data.a) || !isNumeric(request.data.b)) {
+                    throw new Error("Bad request, data in incorrect");
+                } else {
+                    result = {
+                        id: request.id,
+                        message: (request.data.a + request.data.b)
+                    }
+                }
+                break;
+            default:
+                throw new Error("I do not know what it is :(");
+        }
+        return JSON.stringify(result);
     }
 
-    _write(buf, encoding, cb) {
-        buf = this.marker + buf.toString().replace(/\n/g, '\n' + this.marker);
-        buf = new Buffer(buf);
-        this.buffer = Buffer.concat([this.buffer, buf]);
-        this._read(buf.length);
-        cb();
+    _transform(buf, encoding, cb) {
+        try {
+            var data = buf.toString().replace(/'/g, '"');
+            var request = JSON.parse(data);
+            buf = new Buffer(this._handleRequest(request) + "\n");
+        } catch(e) {
+            buf = new Buffer("Error. " + e.message + "\n");
+        }
+        cb(null, buf);
     }
 }
 
@@ -43,15 +66,9 @@ var server = net.createServer((connection) => {
         }
     });
 
-    var o = new myStream({marker: '>'});
-    var i = new myStream({marker: '<'});
-
-
-    connection.pipe(i).pipe(process.stdout);
-    process.stdin.pipe(o).pipe(connection);
-
-    //connection.pipe(process.stdout);
-    //process.stdin.pipe(connection);
+    var transformStream = new myStream();
+    connection.pipe(transformStream).pipe(process.stdout);
+    process.stdin.pipe(transformStream).pipe(connection);
 });
 
 server.listen(3030, () => {
