@@ -8,6 +8,7 @@ const Mongodb = require('./models/Mongodb');
 const authenticate = require('authenticate-package');
 const users = require('./models/user');
 const app = express();
+require('./websocket/server');
 
 app.set('port', config.port);
 authenticate.init(config.secret, users);
@@ -16,10 +17,8 @@ app.use(cors());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: false }));
 
-// app.get('/', function(req, res) {
-//     res.send('Hello! The API is at http://localhost:' + app.get('port') + '/');
-// });
 app.use('/', require('./controllers/index'));
+app.use('/chat', require('./controllers/chat'));
 app.use('/register', require('./controllers/register'));
 app.use(authenticate);
 app.use('/user', require('./controllers/user'));
@@ -33,8 +32,8 @@ app.use((err, req, res, next) => {
 
 let startServer = () => {
 	app.listen(app.get('port'), () => {
-    console.log('Express server listening on port', app.get('port'));
-  });
+        console.log('Express server listening on port', app.get('port'));
+    });
 };
 
 Mongodb.connect(startServer);

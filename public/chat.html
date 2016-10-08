@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font: 13px Helvetica, Arial; }
+        form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+        form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+        form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+        #messages { list-style-type: none; margin: 0; padding: 0; }
+        #messages li { padding: 5px 10px; }
+        #messages li:nth-child(odd) { background: #eee; }
+    </style>
+</head>
+<body>
+    <h1>Hello! Chat is at http://localhost:8089/'</h1>
+    <select name="room" id="room">
+        <option value="support">Support</option>
+        <option value="development">Development</option>
+        <option value="managment">Managment</option>
+    </select>
+    <button id="to-room">Open</button>
+    <ul id="messages"></ul>
+    <form action="" onsubmit="return false">
+        <input id="text" autocomplete="off" /><button id="send">Send</button>
+    </form>
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+<script>
+    var socket = null;
+    var input = document.getElementById("text");
+    var messages = document.getElementById("messages");
+    var toRoom = document.getElementById("to-room");
+
+    toRoom.addEventListener('click', function(){
+        var roomName = document.getElementById('room').value;
+
+        if (!socket) {
+            socket = io.connect('http://localhost:8089');
+            socket.on('chat message', addMessage);
+            socket.on('joined room', function (data) {
+                socket.currentRoom = data.name;
+                addMessage("Welcome to the " + data.name + " room.");
+            });
+        } else if (socket.currentRoom) {
+            socket.emit('leave room', { name: socket.currentRoom });
+            addMessage("You leaved " + socket.currentRoom + " room.");
+        }
+
+        socket.emit('to room', { name: roomName });
+    });
+
+    document.getElementById('send').addEventListener('click', function() {
+        if (!socket) {
+            addMessage("You shold open one of the room.");
+        } else if (input.value) {
+            socket.emit('chat message', {"room": socket.currentRoom, "message": input.value});
+            input.value = '';
+        }
+    });
+
+    function addMessage(msg) {
+        var li = document.createElement('li');
+        li.innerHTML = msg;
+        messages.appendChild(li);
+    }
+</script>
+</body>
+</html>
