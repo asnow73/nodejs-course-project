@@ -6,6 +6,7 @@ const app = express();
 
 app.post('/', (req, res, next) => {
     let data = req.body;
+    console.log("aaa");
     users.make(data)
     .then((data) => {
         res.send(data);
